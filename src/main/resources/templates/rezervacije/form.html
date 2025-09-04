@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="hr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: base('Rezervacije','Rezervacije','rezervacije', ~{::content})}">
+<th:block th:fragment="content">
+
+    <form th:action="@{/rezervacije/save}" method="post" th:object="${rezervacija}" class="mb-8 grid gap-4 bg-gray-800/40 p-6 rounded-xl">
+        <!-- CSRF -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <!-- SKRIVENI ID (NUŽNO ZA UPDATE) -->
+        <input type="hidden" th:field="*{rezervacijaID}"/>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- DOGAĐAJ -->
+            <div>
+                <label class="block text-sm text-gray-300 mb-1">Događaj</label>
+                <select name="dogadajId" class="w-full rounded-md bg-gray-800 text-white p-2">
+                    <option th:each="d : ${dogadaji}"
+                            th:value="${d.dogadajID}"
+                            th:selected="${rezervacija.dogadaj != null} ? ${d.dogadajID} == ${rezervacija.dogadaj.dogadajID} : false"
+                            th:text="${d.naziv}">Događaj</option>
+                </select>
+            </div>
+
+            <!-- POSJETITELJ -->
+            <div>
+                <label class="block text-sm text-gray-300 mb-1">Posjetitelj</label>
+                <select name="posjetiteljId" class="w-full rounded-md bg-gray-800 text-white p-2">
+                    <option th:each="p : ${posjetitelji}"
+                            th:value="${p.posjetiteljID}"
+                            th:selected="${rezervacija.posjetitelj != null} ? ${p.posjetiteljID} == ${rezervacija.posjetitelj.posjetiteljID} : false"
+                            th:text="${p.ime + ' ' + p.prezime}">Posjetitelj</option>
+                </select>
+            </div>
+
+            <!-- BROJ MJESTA -->
+            <div>
+                <label class="block text-sm text-gray-300 mb-1">Broj mjesta</label>
+                <input type="number" min="1" th:field="*{brojMjesta}"
+                       class="w-full rounded-md bg-gray-800 text-white p-2"/>
+            </div>
+
+            <!-- STATUS (samo admin) -->
+            <div>
+                <label class="block text-sm text-gray-300 mb-1">Status</label>
+                <select th:field="*{status}" class="w-full rounded-md bg-gray-800 text-white p-2">
+                    <option th:each="s : ${statusi}"
+                            th:value="${s}"
+                            th:text="${s}">STATUS</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="flex gap-2">
+            <button type="submit" class="rounded-md bg-indigo-600 px-4 py-2 text-white">Spremi</button>
+            <a th:href="@{/rezervacije}" class="rounded-md bg-gray-700 px-4 py-2 text-white">Odustani</a>
+        </div>
+    </form>
+
+    <!-- TABLICA S REZERVACIJAMA (read-only serverska polja se ovdje samo prikazuju) -->
+    <div class="overflow-x-auto bg-gray-800/40 rounded-xl">
+        <table class="min-w-full divide-y divide-white/10">
+            <thead>
+            <tr class="text-left text-sm text-gray-300">
+                <th class="py-3">#</th>
+                <th class="py-3">Događaj</th>
+                <th class="py-3">Posjetitelj</th>
+                <th class="py-3">Broj mjesta</th>
+                <th class="py-3">Status</th>
+                <th class="py-3">Datum rez.</th>
+                <th class="py-3">Ukupna cijena</th>
+                <th class="py-3"></th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-white/10">
+            <tr th:each="r, iStat : ${rezervacije}" class="text-sm text-white">
+                <td class="py-2" th:text="${iStat.index + 1}">1</td>
+                <td class="py-2" th:text="${r.dogadaj != null ? r.dogadaj.naziv : '-'}">Naziv</td>
+                <td class="py-2" th:text="${r.posjetitelj != null ? r.posjetitelj.ime + ' ' + r.posjetitelj.prezime : '-'}">Ime Prezime</td>
+                <td class="py-2" th:text="${r.brojMjesta}">1</td>
+                <td class="py-2" th:text="${r.status}">STATUS</td>
+                <td class="py-2" th:text="${#temporals.format(r.datumRezervacije, 'dd.MM.yyyy')}">-</td>
+                <td class="py-2" th:text="${r.ukupnaCijena}">0.00</td>
+                <td class="py-2">
+                    <a th:href="@{|/rezervacije/edit/${r.rezervacijaID}|}"
+                       class="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white">Uredi</a>
+
+                    <form th:action="@{|/rezervacije/${r.rezervacijaID}/delete|}" method="post" class="inline">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="rounded-md bg-red-600 px-3 py-1"
+                                onclick="return confirm('Obrisati rezervaciju?')">Obriši</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</th:block>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="hr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: base('Recenzije','Recenzije','recenzije', ~{::content})}">
+<th:block th:fragment="content">
+
+    <div th:if="${#lists.isEmpty(recenzije)}" class="text-gray-400">Nema recenzija.</div>
+
+    <ul th:if="${!#lists.isEmpty(recenzije)}" role="list" class="space-y-4">
+        <li th:each="r : ${recenzije}">
+            <article class="rounded-xl border border-white/10 bg-white/5 p-4 sm:p-5 hover:bg-white/10 transition">
+                <!-- Gornji red: Lijevi i desni DIV -->
+                <div class="flex items-start justify-between gap-6">
+                    <!-- LIJEVO -->
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-base font-semibold text-white">
+                            <span th:text="${r.posjetitelj != null ? (r.posjetitelj.ime + ' ' + r.posjetitelj.prezime) : 'Nepoznat posjetitelj'}">Ana Horvat</span>
+                            <span class="text-gray-400 font-normal" th:if="${r.posjetitelj != null}">
+                                (<span th:text="${r.posjetitelj.email}">ana.horvat@example.com</span>)
+                                <p class="mt-4 text-lg sm:text-xl leading-relaxed text-gray-100" th:text="${r.komentar}">
+                                    Odličan koncert!
+                                </p>
+                            </span>
+                        </h3>
+                    </div>
+
+                    <!-- DESNO -->
+                    <div class="shrink-0 flex flex-col items-end text-right">
+                        <!-- Događaj i datum - ispod zvjezdica, desno -->
+                        <p class="mt-2 text-base sm:text-lg text-gray-300">
+                            Događaj:
+                            <span class="text-white font-medium" th:text="${r.dogadaj != null ? r.dogadaj.naziv : '-'}">Večer jazza</span>
+                            <span class="mx-2 text-gray-600">•</span>
+                            <time th:text="${r.datumRecenzije != null ? #temporals.format(r.datumRecenzije, 'dd.MM.yyyy') : '-'}">26.08.2025</time>
+                        </p>
+                        <!-- Zvjezdice (50% veće = text-2xl / sm:text-3xl) -->
+                        <div class="text-2xl sm:text-3xl leading-none" aria-label="Ocjena">
+                          <span class="sr-only"
+                                th:text="${'Ocjena: ' + (r.ocjena != null ? r.ocjena : 0) + '/5'}">Ocjena</span>
+                                        <span th:each="i : ${#numbers.sequence(1,5)}"
+                                              th:text="${i <= (r.ocjena != null ? r.ocjena : 0) ? '★' : '☆'}"
+                                              th:classappend="${i <= (r.ocjena != null ? r.ocjena : 0) ? ' text-yellow-400' : ' text-gray-600'}">
+                          </span>
+                        </div>
+
+
+                    </div>
+                </div>
+            </article>
+        </li>
+    </ul>
+
+</th:block>
+</html>

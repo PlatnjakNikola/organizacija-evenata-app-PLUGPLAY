@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="hr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: base('Rezervacije','Rezervacije','rezervacije', ~{::content})}">
+<th:block th:fragment="content">
+<div class="max-w-3xl mx-auto p-6 space-y-6">
+    <h1 class="text-2xl font-bold mb-4 text-white">
+        Prognoza (dnevni min/max) — <span th:text="${city}">Zagreb</span>
+    </h1>
+
+
+    <form th:action="@{/vrijeme/result}" method="get" class="mb-8 flex flex-col sm:flex-row items-center gap-4 bg-gray-800/40 p-6 rounded-xl">
+        <input
+                name="city"
+                type="text"
+                placeholder="Unesite grad"
+                th:value="${city}"
+                class="w-full sm:w-auto flex-1 rounded-lg px-4 py-2 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+        />
+
+        <button
+                type="submit"
+                class="rounded-lg bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 transition-colors"
+        >
+            Traži
+        </button>
+    </form>
+
+
+    <div th:if="${error}" class="mb-6 p-4 rounded-xl bg-red-900/40 border border-red-600">
+        <p th:text="${error}">Doslo je do greske.</p>
+    </div>
+
+    <div th:if="${days}" class="bg-gray-800/40 p-6 rounded-xl">
+        <table class="w-full text-white">
+            <thead class="bg-gray-800/50">
+            <tr>
+                <th class="text-left px-4 py-3">Datum</th>
+                <th class="text-left px-4 py-3">Min °C</th>
+                <th class="text-left px-4 py-3">Max °C</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="d : ${days}" class="border-t border-gray-800">
+                <td class="px-4 py-3" th:text="${#temporals.format(d.date, 'yyyy-MM-dd')}">2025-08-29</td>
+                <td class="px-4 py-3" th:text="${#numbers.formatDecimal(d.minC, 1, 'NONE', 1, 'COMMA')}">18.3</td>
+                <td class="px-4 py-3" th:text="${#numbers.formatDecimal(d.maxC, 1, 'NONE', 1, 'COMMA')}">29.7</td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <p class="text-sm text-gray-300 mt-4" th:if="${updatedAt}">
+        Zadnje ažuriranje: <span th:text="${#temporals.format(updatedAt, 'yyyy-MM-dd HH:mm')}">--</span>
+    </p>
+
+</div>
+</th:block>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="hr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: base('Rezervacije','Rezervacije','rezervacije', ~{::content})}">
+<th:block th:fragment="content">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-white/10">
+                <thead>
+                <tr class="text-left text-sm text-gray-300">
+                    <th class="p-2">Događaj</th>
+                    <th class="p-2">Datum događaja</th>
+                    <th class="p-2">Broj mjesta</th>
+                    <th class="p-2">Status</th>
+                    <th class="p-2">Ukupna cijena</th>
+                    <th class="p-2">Rezervirano</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-white/10">
+                <tr th:each="r : ${rezervacije}" class="text-sm text-white">
+                    <td class="p-2" th:text="${r.dogadaj != null ? r.dogadaj.naziv : '—'}">Naziv</td>
+                    <td class="p-2" th:text="${r.dogadaj != null ? #temporals.format(r.dogadaj.datumVrijeme,'dd.MM.yyyy. HH:mm') : '—'}">datum</td>
+                    <td class="p-2" th:text="${r.brojMjesta}">2</td>
+                    <td class="p-2" th:text="${r.status}">CONFIRMED</td>
+                    <td class="p-2" th:text="${#numbers.formatDecimal(r.ukupnaCijena,1,'COMMA',2,'POINT')}">0,00</td>
+                    <td class="p-2" th:text="${#temporals.format(r.datumRezervacije,'dd.MM.yyyy.')}">01.01.2025.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+</th:block>
+</html>
